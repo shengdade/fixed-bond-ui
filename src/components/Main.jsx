@@ -1,27 +1,20 @@
 import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
-import { ethers } from "ethers";
-import { useEffect, useMemo, useState } from "react";
-import { BOND_CONTRACT_ADDRESS } from "./constants";
-import abi from "./abi/FixedBond.json";
+import Container from "@mui/material/Container";
+import { useContext, useEffect, useState } from "react";
+import { ContractContext } from "./App";
+import BondCard from "./BondCard";
+import UserCard from "./UserCard";
 
-function App() {
+function Main() {
+  const contract = useContext(ContractContext);
   const [currentAccount, setCurrentAccount] = useState(null);
   const [bondInfo, setBondInfo] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-
-  const hasMetamask = useMemo(() => {
-    const { ethereum } = window;
-    if (!ethereum) {
-      setErrorMessage("Make sure you have Metamask installed!");
-      return false;
-    }
-    return true;
-  }, []);
 
   const connectWallet = async () => {
     try {
-      if (!hasMetamask) return;
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
@@ -36,7 +29,6 @@ function App() {
   useEffect(() => {
     const initializeWallet = async () => {
       try {
-        if (!hasMetamask) return;
         const accounts = await window.ethereum.request({
           method: "eth_accounts",
         });
@@ -44,8 +36,6 @@ function App() {
           const account = accounts[0];
           console.log("Found an authorized account:", account);
           setCurrentAccount(account);
-        } else {
-          setErrorMessage("No authorized account found");
         }
       } catch (error) {
         setErrorMessage(error.message);
@@ -53,44 +43,46 @@ function App() {
     };
 
     initializeWallet();
-  }, [hasMetamask]);
+  }, []);
 
   useEffect(() => {
+    const getBondInfo = async () => {
+      try {
+        const bondInfo = await contract.bondInfo();
+        setBondInfo(bondInfo);
+      } catch (error) {
+        setErrorMessage(error.message);
+      }
+    };
+
+    const getUserInfo = async () => {
+      try {
+        const userInfo = await contract.userInfo(currentAccount);
+        setUserInfo(userInfo);
+      } catch (error) {
+        setErrorMessage(error.message);
+      }
+    };
+
     if (currentAccount) {
       getBondInfo();
+      getUserInfo();
     }
-  }, [currentAccount]);
-
-  const getBondInfo = async () => {
-    try {
-      if (hasMetamask) {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const contract = new ethers.Contract(
-          BOND_CONTRACT_ADDRESS,
-          abi.abi,
-          signer
-        );
-        const bondInfo = await contract.bondInfo();
-        console.log(bondInfo);
-      }
-    } catch (error) {
-      setErrorMessage(error.message);
-    }
-  };
+  }, [currentAccount, contract]);
 
   return (
-    <div>
+    <Container maxWidth="sm" sx={{ pt: 2 }}>
       {errorMessage && <Alert severity="warning">{errorMessage}</Alert>}
       {currentAccount && <Alert severity="success">{currentAccount}</Alert>}
-      {hasMetamask && !currentAccount && (
+      {!currentAccount && (
         <Button variant="outlined" onClick={connectWallet}>
           Connect Wallet
         </Button>
       )}
-      <h3>{bondInfo}</h3>
-    </div>
+      {currentAccount && <BondCard bondInfo={bondInfo} />}
+      {currentAccount && <UserCard userInfo={userInfo} />}
+    </Container>
   );
 }
 
-export default App;
+export default Main;
