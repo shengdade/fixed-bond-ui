@@ -6,8 +6,17 @@ import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import CircularProgress from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
+import { useState } from "react";
+import DepositDialog from "./dialog/Deposit";
+import EmergencyWithdrawDialog from "./dialog/EmergencyWithdraw";
+import WithdrawDialog from "./dialog/Withdraw";
 
 function UserCard({ userInfo }) {
+  const [depositDialogOpen, setDepositDialogOpen] = useState(false);
+  const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
+  const [emergencyWithdrawDialogOpen, setEmergencyWithdrawDialogOpen] =
+    useState(false);
+
   if (!userInfo) return <CircularProgress />;
 
   return (
@@ -22,13 +31,30 @@ function UserCard({ userInfo }) {
       </CardContent>
       <CardActions>
         <Box sx={{ flex: 1 }}>
-          <Button size="small" color="warning">
+          <Button
+            size="small"
+            color="warning"
+            onClick={() => setEmergencyWithdrawDialogOpen(true)}
+          >
             Emergency Withdraw
           </Button>
         </Box>
-        <Button size="small">Withdraw</Button>
-        <Button size="small">Deposit</Button>
+        <Button size="small" onClick={() => setWithdrawDialogOpen(true)}>
+          Withdraw
+        </Button>
+        <Button size="small" onClick={() => setDepositDialogOpen(true)}>
+          Deposit
+        </Button>
       </CardActions>
+      <DepositDialog open={depositDialogOpen} setOpen={setDepositDialogOpen} />
+      <WithdrawDialog
+        open={withdrawDialogOpen}
+        setOpen={setWithdrawDialogOpen}
+      />
+      <EmergencyWithdrawDialog
+        open={emergencyWithdrawDialogOpen}
+        setOpen={setEmergencyWithdrawDialogOpen}
+      />
     </Card>
   );
 }
