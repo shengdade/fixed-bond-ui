@@ -11,6 +11,11 @@ import DepositDialog from "./dialog/Deposit";
 import EmergencyWithdrawDialog from "./dialog/EmergencyWithdraw";
 import WithdrawDialog from "./dialog/Withdraw";
 
+function getDisplayTime(seconds) {
+  const time = new Date(seconds * 1000);
+  return time.toLocaleString();
+}
+
 function UserCard({ userInfo }) {
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
@@ -26,7 +31,9 @@ function UserCard({ userInfo }) {
         <Typography>
           Amount Deposited: {userInfo.amountDeposited.toNumber()}
         </Typography>
-        <Typography>Deposited On: {userInfo.depositedOn.toNumber()}</Typography>
+        <Typography>
+          Deposited On: {getDisplayTime(userInfo.depositedOn.toNumber())}
+        </Typography>
         <Typography>Lock Period: {userInfo.lockPeriod.toNumber()}</Typography>
       </CardContent>
       <CardActions>
