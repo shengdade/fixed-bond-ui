@@ -12,8 +12,14 @@ import EmergencyWithdrawDialog from "./dialog/EmergencyWithdraw";
 import WithdrawDialog from "./dialog/Withdraw";
 
 function getDisplayTime(seconds) {
+  if (!seconds) return "N/A";
   const time = new Date(seconds * 1000);
   return time.toLocaleString();
+}
+
+function getLockPeriod(period) {
+  if (!period) return "N/A";
+  return `${period} month`;
 }
 
 function UserCard({ userInfo }) {
@@ -34,7 +40,9 @@ function UserCard({ userInfo }) {
         <Typography>
           Deposited On: {getDisplayTime(userInfo.depositedOn.toNumber())}
         </Typography>
-        <Typography>Lock Period: {userInfo.lockPeriod.toNumber()}</Typography>
+        <Typography>
+          Lock Period: {getLockPeriod(userInfo.lockPeriod.toNumber())}
+        </Typography>
       </CardContent>
       <CardActions>
         <Box sx={{ flex: 1 }}>
