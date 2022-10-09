@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://dade-ca.github.io/fixed-bond-ui",
+  "homepage": "http://shengdade.github.io/fixed-bond-ui",
   "dependencies": {
     "@mui/icons-material": "^5.2.0",
     "@mui/lab": "^5.0.0-alpha.58",
